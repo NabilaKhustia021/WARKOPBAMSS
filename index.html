@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warung Kopi BAMSS - Premium Edition</title>
+    <style>
+        /* --- CSS DASAR (Sama seperti sebelumnya) --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; color: #333; padding: 20px;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+        .header {
+            background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2); text-align: center; margin-bottom: 30px;
+        }
+        .header h1 { color: #6c5ce7; font-size: 2.8em; margin-bottom: 5px; }
+        .nav-tabs {
+            display: flex; background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px; padding: 10px; margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); gap: 15px;
+        }
+        .nav-tab {
+            flex: 1; padding: 20px; background: transparent;
+            border: none; border-radius: 15px; font-size: 18px; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease; color: #636e72;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .nav-tab.active {
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+            color: white; transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(108,92,231,0.4);
+        }
+        .tab-content { display: none; animation: slideUp 0.4s ease; }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- LAYOUT & KARTU --- */
+        .stats-section {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px; margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95); padding: 35px; border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; transition: 0.3s;
+        }
+        .stat-number { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; display: block; }
+        .val-income { color: #00b894; }
+        .val-profit { color: #00cec9; }
+        .main-layout { display: grid; grid-template-columns: 1.8fr 1fr; gap: 30px; }
+        .section-card {
+            background: rgba(255, 255, 255, 0.95); padding: 35px; border-radius: 30px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.15); height: fit-content; margin-bottom: 20px;
+        }
+        .section-title { font-size: 1.8em; color: #6c5ce7; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+
+        /* --- POS & KERANJANG --- */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .product-card {
+            background: #f8f9fa; padding: 30px 20px; border-radius: 22px; text-align: center; cursor: pointer;
+            transition: 0.3s; border: 4px solid transparent;
+        }
+        .product-card:hover { transform: translateY(-8px); border-color: #6c5ce7; background: white; }
+        .p-name { font-weight: 800; font-size: 1.3em; color: #2d3436; margin-bottom: 10px; display: block; }
+        .cart-item { background: #f1f2f6; padding: 15px; border-radius: 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .cart-total-box {
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe); color: white;
+            padding: 30px; border-radius: 20px; text-align: center; margin: 20px 0;
+            font-size: 1.8em; font-weight: bold;
+        }
+
+        /* --- FITUR BON (BELUM BAYAR) --- */
+        .bon-container { margin-top: 25px; border-top: 2px dashed #ddd; padding-top: 20px; }
+        .order-saved-item {
+            background: #fff9db; border-left: 6px solid #f1c40f;
+            padding: 15px; border-radius: 15px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .btn-pay-now {
+            background: #00b894; color: white; border: none;
+            padding: 8px 15px; border-radius: 10px; font-weight: bold; cursor: pointer;
+        }
+
+        /* --- FILTER LAPORAN RAKSASA --- */
+        .filter-container { display: flex; gap: 15px; align-items: center; }
+        .select-besar {
+            flex: 1; padding: 20px !important; font-size: 20px !important;
+            border: 3px solid #6c5ce7 !important; border-radius: 18px !important;
+            background-color: white; font-weight: 800; cursor: pointer;
+        }
+
+        /* --- TOMBOL --- */
+        .btn { padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn-primary { background: linear-gradient(45deg, #6c5ce7, #a29bfe); color: white; }
+        .btn-success { background: linear-gradient(45deg, #00b894, #55efc4); color: white; }
+        .btn-danger { background: linear-gradient(45deg, #ff7675, #fd79a8); color: white; }
+        .btn-warning { background: #f1c40f; color: white; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .main-layout { grid-template-columns: 1fr !important; }
+            .nav-tabs { overflow-x: auto; justify-content: flex-start; }
+            .nav-tab { min-width: 130px; flex: none; }
+            .filter-container { flex-direction: column; }
+            .select-besar, .btn-danger { width: 100% !important; height: auto !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>☕ Warung Kopi BAMSS</h1>
+        <p>Manajemen Penjualan & Pengeluaran Terintegrasi</p>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="openTab(event, 'tab-kasir')">💰 Kasir</button>
+        <button class="nav-tab" onclick="openTab(event, 'tab-produk')">📦 Produk</button>
+        <button class="nav-tab" onclick="openTab(event, 'tab-pengeluaran')">💸 Pengeluaran</button>
+        <button class="nav-tab" onclick="openTab(event, 'tab-laporan')">📊 Laporan</button>
+    </div>
+
+    <!-- TAB KASIR -->
+    <div id="tab-kasir" class="tab-content active">
+        <div class="stats-section">
+            <div class="stat-card"><span class="stat-number val-income" id="stat-today">Rp 0</span><small>Omzet Hari Ini</small></div>
+            <div class="stat-card"><span class="stat-number val-profit" id="stat-total-sales">Rp 0</span><small>Total Penjualan</small></div>
+        </div>
+
+        <div class="main-layout">
+            <!-- Grid Menu -->
+            <div class="section-card">
+                <h2 class="section-title">📋 Pilih Menu</h2>
+                <div class="product-grid" id="pos-grid"></div>
+            </div>
+
+            <!-- Keranjang & Bon -->
+            <div class="section-card">
+                <h2 class="section-title">🛒 Keranjang</h2>
+                <div id="cart-list"></div>
+                <div class="cart-total-box" id="cart-total">Rp 0</div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <button class="btn btn-success" onclick="processCheckout()">✅ BAYAR</button>
+                    <button class="btn btn-warning" onclick="saveAsBon()">📝 BON</button>
+                </div>
+                <button class="btn btn-danger" style="padding: 12px;" onclick="clearCart()">🗑️ Kosongkan</button>
+
+                <!-- Daftar Belum Bayar -->
+                <div class="bon-container">
+                    <h3 style="margin-bottom: 15px; color: #f39c12;">📝 Belum Bayar (Bon)</h3>
+                    <div id="bon-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB PRODUK -->
+    <div id="tab-produk" class="tab-content">
+        <div class="main-layout">
+            <div class="section-card">
+                <h2 class="section-title">➕ Tambah Menu</h2>
+                <input type="text" id="p-name" placeholder="Nama Menu" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
+                <input type="number" id="p-price" placeholder="Harga" style="width:100%; padding:15px; margin-bottom:20px; border-radius:10px; border:1px solid #ddd;">
+                <button class="btn btn-primary" onclick="addProduct()">➕ Simpan Produk</button>
+            </div>
+            <div class="section-card">
+                <h2 class="section-title">📜 Daftar Produk</h2>
+                <div id="product-manage-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB PENGELUARAN -->
+    <div id="tab-pengeluaran" class="tab-content">
+        <div class="main-layout">
+            <div class="section-card">
+                <h2 class="section-title">💸 Catat Pengeluaran</h2>
+                <input type="text" id="exp-desc" placeholder="Keterangan" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
+                <input type="number" id="exp-amount" placeholder="Nominal" style="width:100%; padding:15px; margin-bottom:20px; border-radius:10px; border:1px solid #ddd;">
+                <button class="btn btn-danger" onclick="addExpense()">🚀 Simpan Pengeluaran</button>
+            </div>
+            <div class="section-card">
+                <h2 class="section-title">📉 Pengeluaran Terakhir</h2>
+                <div id="expense-simple-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB LAPORAN -->
+    <div id="tab-laporan" class="tab-content">
+        <div class="section-card" style="margin-bottom: 30px;">
+            <h2 class="section-title">📅 Filter Laporan</h2>
+            <div class="filter-container">
+                <select id="f-month" class="select-besar" onchange="renderReports()"></select>
+                <select id="f-year" class="select-besar" onchange="renderReports()"></select>
+                <button class="btn btn-danger" style="width: auto; padding: 0 30px; height: 75px; margin: 0;" onclick="resetData()">Reset</button>
+            </div>
+        </div>
+        <div class="stats-section">
+            <div class="stat-card"><span class="stat-number val-income" id="rep-income">Rp 0</span><b>Pemasukan</b></div>
+            <div class="stat-card"><span class="stat-number val-expense" id="rep-expense" style="color:#ff7675;">Rp 0</span><b>Pengeluaran</b></div>
+            <div class="stat-card"><span class="stat-number val-profit" id="rep-profit">Rp 0</span><b>Laba Bersih</b></div>
+        </div>
+        <div class="main-layout">
+            <div class="section-card"><h3>📈 Detail Transaksi</h3><div id="rep-income-list"></div></div>
+            <div class="section-card"><h3>📉 Detail Pengeluaran</h3><div id="rep-expense-list"></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // DATA CORE
+    let products = JSON.parse(localStorage.getItem('wk_pro_p')) || [{id: 1, name: 'Kopi Hitam', price: 10000}, {id: 2, name: 'Latte', price: 20000}];
+    let cart = [];
+    let sales = JSON.parse(localStorage.getItem('wk_pro_s')) || [];
+    let expenses = JSON.parse(localStorage.getItem('wk_pro_e')) || [];
+    let bons = JSON.parse(localStorage.getItem('wk_pro_bons')) || [];
+
+    function formatRp(num) { return "Rp " + Number(num).toLocaleString('id-ID'); }
+
+    function save() {
+        localStorage.setItem('wk_pro_p', JSON.stringify(products));
+        localStorage.setItem('wk_pro_s', JSON.stringify(sales));
+        localStorage.setItem('wk_pro_e', JSON.stringify(expenses));
+        localStorage.setItem('wk_pro_bons', JSON.stringify(bons));
+    }
+
+    function openTab(evt, tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        evt.currentTarget.classList.add('active');
+        refreshUI();
+    }
+
+    // KASIR & KERANJANG
+    function addToCart(id) {
+        const p = products.find(i => i.id === id);
+        const inCart = cart.find(i => i.id === id);
+        if(inCart) inCart.qty++; else cart.push({ ...p, qty: 1 });
+        renderCart();
+    }
+
+    function renderCart() {
+        const list = document.getElementById('cart-list');
+        list.innerHTML = ''; let total = 0;
+        cart.forEach((item, index) => {
+            total += (item.price * item.qty);
+            list.innerHTML += `
+                <div class="cart-item">
+                    <div><b>${item.name}</b><br><small>${formatRp(item.price)}</small></div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button onclick="changeQty(${index}, -1)" style="padding:5px 10px; border-radius:5px; border:none;">-</button>
+                        <b>${item.qty}</b>
+                        <button onclick="changeQty(${index}, 1)" style="padding:5px 10px; border-radius:5px; border:none;">+</button>
+                    </div>
+                </div>`;
+        });
+        document.getElementById('cart-total').innerText = formatRp(total);
+    }
+
+    function changeQty(idx, delta) {
+        cart[idx].qty += delta;
+        if(cart[idx].qty <= 0) cart.splice(idx, 1);
+        renderCart();
+    }
+
+    function clearCart() { cart = []; renderCart(); }
+
+    function processCheckout() {
+        if(cart.length === 0) return alert("Keranjang kosong!");
+        const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+        sales.push({ id: Date.now(), date: new Date().toISOString(), items: [...cart], total });
+        cart = []; save(); refreshUI(); renderCart();
+        alert("Pembayaran Berhasil!");
+    }
+
+    // FITUR BON (BELUM BAYAR)
+    function saveAsBon() {
+        if(cart.length === 0) return alert("Keranjang kosong!");
+        const pelanggan = prompt("Nama Pelanggan / No Meja:");
+        if(!pelanggan) return;
+        const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+        bons.push({ id: Date.now(), customer: pelanggan, items: [...cart], total: total });
+        cart = []; save(); refreshUI(); renderCart();
+        alert("Berhasil disimpan ke Bon.");
+    }
+
+    function renderBons() {
+        const list = document.getElementById('bon-list');
+        list.innerHTML = bons.length === 0 ? '<p style="text-align:center; color:#999;">Tidak ada bon.</p>' : '';
+        bons.forEach((b, i) => {
+            list.innerHTML += `
+                <div class="order-saved-item">
+                    <div><b>${b.customer}</b><br><small>${formatRp(b.total)}</small></div>
+                    <button class="btn-pay-now" onclick="payBon(${i})">Bayar</button>
+                </div>`;
+        });
+    }
+
+    function payBon(index) {
+        if(cart.length > 0 && !confirm("Keranjang masih ada isinya. Ganti dengan pesanan bon ini?")) return;
+        cart = [...bons[index].items];
+        bons.splice(index, 1);
+        save(); renderCart(); renderBons();
+    }
+
+    // PRODUK & PENGELUARAN (Fungsi Standar)
+    function addProduct() {
+        const name = document.getElementById('p-name').value;
+        const price = document.getElementById('p-price').value;
+        if(!name || !price) return;
+        products.push({ id: Date.now(), name, price: parseInt(price) });
+        save(); refreshUI();
+    }
+
+    function deleteProduct(id) {
+        if(confirm('Hapus?')) { products = products.filter(p => p.id !== id); save(); refreshUI(); }
+    }
+
+    function addExpense() {
+        const desc = document.getElementById('exp-desc').value;
+        const amount = document.getElementById('exp-amount').value;
+        if(!desc || !amount) return;
+        expenses.push({ id: Date.now(), date: new Date().toISOString(), desc, amount: parseInt(amount) });
+        save(); refreshUI();
+    }
+
+    // UI REFRESH
+    function refreshUI() {
+        document.getElementById('pos-grid').innerHTML = products.map(p => `
+            <div class="product-card" onclick="addToCart(${p.id})">
+                <span class="p-name">${p.name}</span>
+                <span class="p-price">${formatRp(p.price)}</span>
+            </div>`).join('');
+
+        document.getElementById('product-manage-list').innerHTML = products.map(p => `
+            <div class="cart-item">
+                <span><b>${p.name}</b> (${formatRp(p.price)})</span>
+                <button onclick="deleteProduct(${p.id})" style="background:none; border:none; color:red; cursor:pointer;">Hapus</button>
+            </div>`).join('');
+
+        document.getElementById('expense-simple-list').innerHTML = expenses.slice(-5).reverse().map(e => `
+            <div class="cart-item" style="border-left:4px solid #ff7675;">
+                <span><b>${e.desc}</b><br><small>${formatRp(e.amount)}</small></span>
+            </div>`).join('');
+
+        const today = new Date().toDateString();
+        const tIncome = sales.filter(s => new Date(s.date).toDateString() === today).reduce((a,b) => a+b.total, 0);
+        document.getElementById('stat-today').innerText = formatRp(tIncome);
+        document.getElementById('stat-total-sales').innerText = formatRp(sales.reduce((a,b) => a+b.total, 0));
+        
+        renderBons();
+        renderReports();
+    }
+
+    function renderReports() {
+        const m = parseInt(document.getElementById('f-month').value);
+        const y = parseInt(document.getElementById('f-year').value);
+        const fSales = sales.filter(s => { const d = new Date(s.date); return d.getMonth() === m && d.getFullYear() === y; });
+        const fExp = expenses.filter(e => { const d = new Date(e.date); return d.getMonth() === m && d.getFullYear() === y; });
+        const inc = fSales.reduce((a,b) => a+b.total, 0);
+        const exp = fExp.reduce((a,b) => a+b.amount, 0);
+        document.getElementById('rep-income').innerText = formatRp(inc);
+        document.getElementById('rep-expense').innerText = formatRp(exp);
+        document.getElementById('rep-profit').innerText = formatRp(inc - exp);
+        
+        document.getElementById('rep-income-list').innerHTML = fSales.reverse().map(s => `<div class="cart-item"><span>${new Date(s.date).toLocaleDateString()}</span><b>+ ${formatRp(s.total)}</b></div>`).join('');
+        document.getElementById('rep-expense-list').innerHTML = fExp.reverse().map(e => `<div class="cart-item"><span>${e.desc}</span><b>- ${formatRp(e.amount)}</b></div>`).join('');
+    }
+
+    function resetData() { if(confirm("Hapus laporan?")) { sales = []; expenses = []; save(); refreshUI(); } }
+
+    // INIT
+    const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    document.getElementById('f-month').innerHTML = months.map((m, i) => `<option value="${i}" ${i === new Date().getMonth() ? 'selected' : ''}>${m}</option>`).join('');
+    const curY = new Date().getFullYear();
+    for(let i = curY - 2; i <= curY + 2; i++) {
+        document.getElementById('f-year').innerHTML += `<option value="${i}" ${i === curY ? 'selected' : ''}>${i}</option>`;
+    }
+    refreshUI();
+</script>
+
+</body>
+</html>
